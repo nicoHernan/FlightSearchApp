@@ -14,11 +14,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class FlightViewModel @Inject constructor(
-private val repositoryApp: RepositoryApp
-): ViewModel() {
+class AirportViewModel @Inject constructor(private val repositoryApp: RepositoryApp): ViewModel() {
 
-    private val _airportUiState = MutableStateFlow(AirportUiState())
+    private val _airportUiState = MutableStateFlow(AirportUiState() )
     val airportUiState: StateFlow<AirportUiState> = _airportUiState
 
     init {
@@ -28,7 +26,7 @@ private val repositoryApp: RepositoryApp
                 val airport = repositoryApp.getAllAirportsDB().map { airportEntity ->
                     Airport(
                         id = airportEntity.id,
-                        iata_code = airportEntity.iata_code,
+                        iataCode = airportEntity.iataCode,
                         name = airportEntity.name,
                         passengers = airportEntity.passengers
                     )
@@ -44,7 +42,8 @@ private val repositoryApp: RepositoryApp
 
     fun onQueryChange(value: String) {
         _airportUiState.update {
-            _airportUiState.value.copy(name = value)
+            _airportUiState.value.copy(nameUi = value)
         }
     }
+
 }

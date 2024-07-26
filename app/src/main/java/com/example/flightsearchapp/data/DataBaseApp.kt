@@ -5,9 +5,10 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [AirportEntity::class],
-    version = 1
+    version = 1,
+    exportSchema = true
 )
 
 abstract class DataBaseApp: RoomDatabase () {
-    abstract fun flightDAO(): DaoApp
+    abstract fun airportDAO(): DaoApp
 }

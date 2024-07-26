@@ -6,13 +6,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "airport")      //además está la tabla favorite para insertar con dataStore
 data class AirportEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     val id: Int,
 
-    @ColumnInfo(name = "IATA_CODE")                 //Código IATA de 3 letras
-    val iata_code: String,
-    @ColumnInfo(name = "FULLNAME_AIRPORT")          //Nombre completo del aeropuerto
+    @ColumnInfo(name = "iata_code")                 //Código IATA de 3 letras
+    val iataCode: String,
+    @ColumnInfo(name = "name")          //Nombre completo del aeropuerto
     val name: String,
-    @ColumnInfo(name = "NUMBER_OF_PASSENGERS")     //Cantidad de pasajeros por año
+    @ColumnInfo(name = "passengers")     //Cantidad de pasajeros por año
     val passengers: Int
 )

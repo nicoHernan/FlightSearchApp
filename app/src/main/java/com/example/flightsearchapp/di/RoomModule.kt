@@ -15,18 +15,17 @@ import javax.inject.Singleton
 class RoomModule {
     @Singleton
     @Provides
-    fun providesRoomDB(
-        @ApplicationContext context: Context) = Room
+    fun providesRoomDB(@ApplicationContext context: Context) = Room
         .databaseBuilder(
             context,
             DataBaseApp::class.java,
-            "flight_search.db"
+            "flight_database"
         )
-        .createFromAsset("flight_search.db")
+        .createFromAsset("database/flight_search.db")
         .build()
 
 @Singleton
 @Provides
-fun providesFlightDao(dataBaseApp: DataBaseApp) = dataBaseApp
-    .flightDAO()
+fun providesAirportDao(dataBaseApp: DataBaseApp) = dataBaseApp
+    .airportDAO()
 }
