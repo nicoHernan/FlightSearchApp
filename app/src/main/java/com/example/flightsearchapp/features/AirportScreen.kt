@@ -2,10 +2,15 @@
 
 package com.example.flightsearchapp.features
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,15 +46,15 @@ fun AirportScreen(
 
     Box(
         modifier = Modifier
-            .padding(15.dp),
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
 
         val onQuery = airportUiState.value.nameUi
 
         SearchBar(
-            query = onQuery,                //equivalente a value
-            onQueryChange = { name ->                                   //equivalente a onValueChange
+            query = onQuery,                                      //equivalente a value
+            onQueryChange = { name ->                            //equivalente a onValueChange
                 airportViewModel.onQueryChange(name)
             },
             onSearch = {},                                      //cuando se apreta el icono de busqueda del teclado
@@ -75,7 +81,6 @@ fun AirportScreen(
                     }
                 }
             }
-
         }
     }
 }
@@ -83,19 +88,88 @@ fun AirportScreen(
 
 @Composable
 fun AirportItem(
-    airportItem: Airport
+    airportItem: Airport,
+    onClickItem:() -> Unit
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .wrapContentSize()
-            .padding(15.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
+            .clickable {
+                onClickItem (airportItem.)
+            },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
         Text(
+            text = airportItem.iataCode,
+            fontSize = 16.sp,
+            fontStyle = FontStyle.Italic
+        )
+
+        Spacer(modifier = Modifier.width(20.dp) )
+        
+        Text(
             text = airportItem.name,
-            fontSize = 15.sp,
-            fontStyle = FontStyle.Normal)
+            fontSize = 16.sp,
+            fontStyle = FontStyle.Italic)
+    }
+}
+
+@Composable
+fun FlightsFromItem(
+    flightsFromItem: Airport
+) {
+    Card(
+        modifier = Modifier
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(                           //DEPART IATACODE
+                text = flightsFromItem.iataCode,
+                fontSize = 24.sp,
+                fontStyle = FontStyle.Italic
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(                           //DEPART NAME AIRPORT
+                text = flightsFromItem.name,
+                fontSize = 16.sp,
+                fontStyle = FontStyle.Italic
+            )
+        }
+
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(                             //ARRIVE IATACODE
+                text = flightsFromItem.iataCode,
+                fontSize = 24.sp,
+                fontStyle = FontStyle.Italic
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(                             //ARRIVE NAME AIRPORT
+                text = flightsFromItem.name,
+                fontSize = 16.sp,
+                fontStyle = FontStyle.Italic
+            )
+        }
     }
 }

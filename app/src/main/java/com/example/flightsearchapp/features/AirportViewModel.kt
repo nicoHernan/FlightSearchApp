@@ -45,5 +45,4 @@ class AirportViewModel @Inject constructor(private val repositoryApp: Repository
             _airportUiState.value.copy(nameUi = value)
         }
     }
-
 }
