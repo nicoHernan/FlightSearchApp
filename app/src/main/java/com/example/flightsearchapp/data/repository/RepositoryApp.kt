@@ -1,5 +1,7 @@
-package com.example.flightsearchapp.data
+package com.example.flightsearchapp.data.repository
 
+import com.example.flightsearchapp.data.dao.DaoApp
+import com.example.flightsearchapp.data.entities.AirportEntity
 import javax.inject.Inject
 
 class RepositoryApp @Inject constructor(private val daoApp: DaoApp){

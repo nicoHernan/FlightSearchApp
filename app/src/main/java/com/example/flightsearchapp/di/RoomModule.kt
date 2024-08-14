@@ -22,10 +22,15 @@ class RoomModule {
             "flight_database"
         )
         .createFromAsset("database/flight_search.db")
+        .fallbackToDestructiveMigration()
         .build()
 
-@Singleton
-@Provides
-fun providesAirportDao(dataBaseApp: DataBaseApp) = dataBaseApp
-    .airportDAO()
+    @Singleton
+    @Provides
+    fun providesAirportDao(dataBaseApp: DataBaseApp) = dataBaseApp
+        .airportDAO()
+
+    @Singleton
+    @Provides
+    fun providesFavoriteDao(dataBaseApp: DataBaseApp) = dataBaseApp.favoriteDAO()
 }

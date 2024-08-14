@@ -11,17 +11,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
@@ -36,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.flightsearchapp.data.AirportEntity
-import com.example.flightsearchapp.data.model.Airport
+import com.example.flightsearchapp.data.entities.AirportEntity
+import com.example.flightsearchapp.model.FlightsModel
 
 @Composable
 fun AirportScreen(
@@ -66,13 +65,25 @@ fun AirportScreen(
                 LazyColumn {
                     items(airportUiState.listSuggestionsAirport) { airport ->
                         AirportItem(airportItem = airport) {
-
+                            airportViewModel.getFlights(airport.name,airport.iataCode)
                         }
                     }
                 }
             }
         }
-    ) {}
+    ) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            LazyColumn {
+                items(airportUiState.flightsList) {
+                    FlightsFromItem(flightsFromItem = it)
+                }
+            }
+        }
+    }
 }
 
 
@@ -108,7 +119,8 @@ fun AirportItem(
 
 @Composable
 fun FlightsFromItem(
-    flightsFromItem: Airport
+    flightsFromItem: FlightsModel,
+    airportViewModel: AirportViewModel = hiltViewModel()
 ) {
     Card(
         modifier = Modifier
@@ -120,7 +132,7 @@ fun FlightsFromItem(
                 .height(250.dp)
                 .padding(10.dp)
         ) {
-            val (textDepart, layoutIataCode,layoutArrive, textArrive) = createRefs()
+            val (textDepart, layoutIataCode,layoutArrive, textArrive, iconStart) = createRefs()
             Text(                           //DEPART IATACODE
                 text = "Depart",
                 fontSize = 16.sp,
@@ -144,7 +156,7 @@ fun FlightsFromItem(
             ) {
 
                 Text(                           //DEPART IATACODE
-                    text = flightsFromItem.iataCode,
+                    text = flightsFromItem.flightsDepartCode,
                     fontSize = 20.sp,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold
@@ -153,7 +165,7 @@ fun FlightsFromItem(
                 Spacer(modifier = Modifier.width(5.dp))
 
                 Text(                           //DEPART NAME AIRPORT
-                    text = flightsFromItem.name,
+                    text = flightsFromItem.flightsDepartName,
                     fontSize = 16.sp,
                     fontStyle = FontStyle.Italic
                 )
@@ -179,7 +191,7 @@ fun FlightsFromItem(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(                             //ARRIVE IATACODE
-                    text = flightsFromItem.iataCode,
+                    text = flightsFromItem.flightsArriveCode,
                     fontSize = 20.sp,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold
@@ -188,11 +200,26 @@ fun FlightsFromItem(
                 Spacer(modifier = Modifier.width(5.dp))
 
                 Text(                             //ARRIVE NAME AIRPORT
-                    text = flightsFromItem.name,
+                    text = flightsFromItem.flightsArriveName,
                     fontSize = 16.sp,
                     fontStyle = FontStyle.Italic
                 )
             }
+            
+            Icon(
+                Icons.Filled.Star,
+                contentDescription = "",
+                modifier = Modifier
+                    .constrainAs(iconStart) {
+                        end.linkTo(parent.end, 10.dp)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    .size(30.dp)
+                    .clickable {
+                        airportViewModel.saveFavoriteFlights(flightsFromItem)
+                    }
+            )
         }
 
     }
