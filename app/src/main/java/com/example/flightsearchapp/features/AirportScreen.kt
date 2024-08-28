@@ -27,8 +27,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,7 +50,7 @@ fun AirportScreen(
     val airportUiState = airportViewModel
         .airportUiState
 
-    val isSearching by airportViewModel.isSearching.collectAsState()
+    val isSearching by airportViewModel.isSearchingUiState.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -57,7 +60,9 @@ fun AirportScreen(
                 onQueryChange = airportViewModel::onQueryChange,
                 onSearch = airportViewModel::onQueryChange,
                 active = isSearching,
-                onActiveChange = { airportViewModel.onToogleSearch() },
+                onActiveChange = {isActive ->
+                    airportViewModel.setSearchingState(isActive)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -133,6 +138,9 @@ fun FlightsFromItem(
                 .padding(10.dp)
         ) {
             val (textDepart, layoutIataCode,layoutArrive, textArrive, iconStart) = createRefs()
+            val color = remember {
+                mutableStateOf(Color.LightGray)
+            }
             Text(                           //DEPART IATACODE
                 text = "Depart",
                 fontSize = 16.sp,
@@ -205,7 +213,6 @@ fun FlightsFromItem(
                     fontStyle = FontStyle.Italic
                 )
             }
-            
             Icon(
                 Icons.Filled.Star,
                 contentDescription = "",
@@ -218,7 +225,9 @@ fun FlightsFromItem(
                     .size(30.dp)
                     .clickable {
                         airportViewModel.saveFavoriteFlights(flightsFromItem)
-                    }
+                        color.value = Color.Yellow
+                    },
+                tint = color.value
             )
         }
 

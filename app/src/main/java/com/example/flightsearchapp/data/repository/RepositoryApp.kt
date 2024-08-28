@@ -12,4 +12,5 @@ class RepositoryApp @Inject constructor(private val daoApp: DaoApp){
 
     fun getSuggestionsAirports(value: String): List<AirportEntity> = daoApp.getSuggestionsAirport(value)
 
+    fun getNameAirportByIataCode(value: String) = daoApp.getNameAirportByIataCode(value)
 }

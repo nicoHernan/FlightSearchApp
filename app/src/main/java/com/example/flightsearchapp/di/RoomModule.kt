@@ -22,7 +22,6 @@ class RoomModule {
             "flight_database"
         )
         .createFromAsset("database/flight_search.db")
-        .fallbackToDestructiveMigration()
         .build()
 
     @Singleton

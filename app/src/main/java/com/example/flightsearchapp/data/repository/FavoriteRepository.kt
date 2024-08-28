@@ -11,4 +11,8 @@ class FavoriteRepository @Inject constructor(
     fun insertFavorite(favoritesEntity: FavoritesEntity) {
         favoriteDao.insertFavorite(favoritesEntity)
     }
+
+    fun getFavorites(): List<FavoritesEntity> {
+       return favoriteDao.getFavorite()
+    }
 }
