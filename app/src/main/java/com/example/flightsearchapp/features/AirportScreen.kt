@@ -70,7 +70,7 @@ fun AirportScreen(
                 LazyColumn {
                     items(airportUiState.listSuggestionsAirport) { airport ->
                         AirportItem(airportItem = airport) {
-                            airportViewModel.getFlights(airport.name,airport.iataCode)
+                            airportViewModel.getFlights(airport)
                         }
                     }
                 }

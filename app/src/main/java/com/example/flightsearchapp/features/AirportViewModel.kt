@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearchapp.data.entities.AirportEntity
 import com.example.flightsearchapp.data.entities.FavoritesEntity
+import com.example.flightsearchapp.data.repository.DataStoreRepository
 import com.example.flightsearchapp.data.repository.FavoriteRepository
 import com.example.flightsearchapp.data.repository.RepositoryApp
 import com.example.flightsearchapp.model.FlightsModel
@@ -21,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AirportViewModel @Inject constructor(
     private val repositoryApp: RepositoryApp,
-    private val favoriteRepository: FavoriteRepository
+    private val favoriteRepository: FavoriteRepository,
+    private val dataStoreRepository: DataStoreRepository
 ): ViewModel() {
 
 
@@ -31,7 +32,9 @@ class AirportViewModel @Inject constructor(
     val isSearchingUiState = _isSearchingUiState.asStateFlow()
 
     private val _searchText = MutableStateFlow("")
-
+     init {
+         validateFavoriteFlights()
+     }
     private fun validateFavoriteFlights() {
         viewModelScope.launch(Dispatchers.IO) {
             val flightsList = favoriteRepository.getFavorites().map {
@@ -47,29 +50,33 @@ class AirportViewModel @Inject constructor(
         }
     }
     fun onQueryChange(value: String) {
-        val listSuggestions = emptyList<AirportEntity>()
+        var listSuggestions = emptyList<AirportEntity>()
         if(value.isEmpty()) {
             validateFavoriteFlights()
         }else {
             viewModelScope.launch(Dispatchers.IO) {
-                 repositoryApp.getSuggestionsAirports(value)
+               listSuggestions = repositoryApp.getSuggestionsAirports(value)
+                if(listSuggestions.isEmpty()) {
+                    getLastSearch()
+                }
             }
         }
         airportUiState = airportUiState.copy(nameUi = value, listSuggestionsAirport = listSuggestions)
     }
 
-    fun getFlights(name: String, iataCode: String) {
+    fun getFlights(value: AirportEntity) {
         viewModelScope.launch(Dispatchers.IO) {
+            setLastSearch(value = value)
             setSearchingState(false)
             val flightsList =  repositoryApp.getAllAirportsDB().map {
                 FlightsModel(
-                    flightsDepartCode = iataCode,
-                    flightsDepartName = name,
+                    flightsDepartCode = value.iataCode,
+                    flightsDepartName = value.name,
                     flightsArriveName = it.name,
                     flightsArriveCode = it.iataCode
                 )
             }.filter {
-                name != it.flightsArriveName
+                value.name != it.flightsArriveName
             }
             airportUiState = airportUiState.copy(flightsList = flightsList as ArrayList<FlightsModel>)
         }
@@ -88,6 +95,27 @@ class AirportViewModel @Inject constructor(
 
     fun setSearchingState(isSearching: Boolean){
         _isSearchingUiState.value = isSearching
+    }
+
+    private fun getLastSearch() {
+        viewModelScope.launch {
+            dataStoreRepository.getValue().collect {
+                    val list = listOf(
+                        AirportEntity(
+                            id = it.id,
+                            iataCode = it.iataCode,
+                            name = it.name,
+                            passengers = it.passengers
+                        )
+                    )
+                    setSearchingState(true)
+                    airportUiState = airportUiState.copy(nameUi = it.name, listSuggestionsAirport = list)
+            }
+        }
+    }
+
+    private suspend fun setLastSearch(value: AirportEntity) {
+        dataStoreRepository.setValue(value)
     }
 
 }
